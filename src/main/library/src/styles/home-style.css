@@ -1,0 +1,90 @@
+.images-home{
+    border-radius: 100%;
+}
+.img-h-express {
+    position: absolute;
+    left: 0;
+    height: 45%;
+    width: 100%;
+}
+
+.home-line{
+    position: absolute;
+    border-left: 6px solid black;
+    
+}
+ .line-1 {
+    height: 30%;
+    left: 10%;
+    top: 54.2%;
+ }
+ .img-1{
+    position: absolute;
+    top: 77%;
+    width: 200px;
+    height: 200px;
+    left: 3.5%;
+ }
+ .line-2 {
+    height: 18%;
+    left: 32%;
+    top: 54.2%;
+ }
+ .img-2{
+    position: absolute;
+    top: 70%;
+    width: 150px;
+    height: 150px;
+    left: 27%;
+ }
+ .line-3 {
+    height: 30%;
+    left: 50%;
+    top:54.2%;
+ }
+ .img-3{
+    position: absolute;
+    top: 73%;
+    width: 180px;
+    height: 180px;
+    left: 44.4%;
+ }
+ .line-4 {
+    height: 30%;
+    left: 65%;
+    top: 54.2%;
+ }
+ .img-4{
+    position: absolute;
+    top: 84%;
+    width: 200px;
+    height: 200px;
+    left: 59%;
+ }
+ .line-5 {
+    height: 30%;
+    left: 86%;
+    top: 54.2%;
+ }
+
+ .img-5{
+    position: absolute;
+    top: 77%;
+    width: 170px;
+    height: 170px;
+    left: 81%;
+ }
+ .text-home {
+    position: absolute;
+    top: 48%;
+    left: 11%;
+    background-color:rgb(69, 28, 28);
+    color: white;
+ }
+
+ .home-content {
+    position: absolute;
+    top: 110%;
+ }
+
+ 

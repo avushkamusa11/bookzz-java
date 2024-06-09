@@ -1,0 +1,35 @@
+.line {
+    position: absolute;
+    border-left: 6px solid black;
+    height: 150%;
+    left: 30%;
+    top: 12%;
+  }
+
+  .goal-img {
+    position: absolute;
+    border-radius: 100%;
+    width: 15%;
+    left: 22.5%;
+    top:25%;
+  }
+
+  .goal-text{
+    position: absolute;
+    left: 2%;
+    width: 14%;
+    top: 30%;
+  }
+
+  .books-in-year{
+    position: absolute;
+    top: 15%;
+    left: 55%;
+    font-size: 40px;
+  }
+
+  .yesr-in-books-img{
+    position: absolute;
+    top: 40%;
+    left: 45%;
+  }

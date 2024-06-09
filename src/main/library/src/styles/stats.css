@@ -1,0 +1,12 @@
+.horizontal-line{
+    border: 6px solid black;
+    color: black;
+    
+}
+.stats-img {
+    position: absolute;
+    width: 15%;
+    border-radius: 100%;
+    top: 19%;
+    left: 70%;
+}

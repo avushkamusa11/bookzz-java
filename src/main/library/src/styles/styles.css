@@ -1,0 +1,201 @@
+body {
+  background-color:#b2c9c7;
+}
+
+.nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: #001C30;
+  color: aliceblue;
+}
+
+.title {
+  font-family: "Lucida Handwriting", cursive;
+  font-size: 24px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 700;
+  line-height: 26.4px;
+  color: #64CCC5;
+}
+
+.a {
+  position: relative;
+  display: inline-block;
+  padding: 10px 20px;
+  color: #64CCC5;
+  font-size: 16px;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: .5s;
+  margin-top: 10px;
+  letter-spacing: 4px
+}
+
+.a:hover {
+  background: #64CCC5;
+  color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #64CCC5,
+    0 0 25px #64CCC5,
+    0 0 50px #64CCC5,
+    0 0 100px #64CCC5;
+}
+
+.a span {
+  position: absolute;
+  display: block;
+}
+
+.a span:nth-child(1) {
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #64CCC5);
+  animation: btn-anim1 1s linear infinite;
+}
+
+@keyframes btn-anim1 {
+  0% {
+    left: -100%;
+  }
+
+  50%,
+  100% {
+    left: 100%;
+  }
+}
+
+.a span:nth-child(2) {
+  top: -100%;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, #64CCC5);
+  animation: btn-anim2 1s linear infinite;
+  animation-delay: .25s
+}
+
+@keyframes btn-anim2 {
+  0% {
+    top: -100%;
+  }
+
+  50%,
+  100% {
+    top: 100%;
+  }
+}
+
+.a span:nth-child(3) {
+  bottom: 0;
+  right: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(270deg, transparent, #64CCC5);
+  animation: btn-anim3 1s linear infinite;
+  animation-delay: .5s
+}
+
+@keyframes btn-anim3 {
+  0% {
+    right: -100%;
+  }
+
+  50%,
+  100% {
+    right: 100%;
+  }
+}
+
+.a span:nth-child(4) {
+  bottom: -100%;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(360deg, transparent, #64CCC5);
+  animation: btn-anim4 1s linear infinite;
+  animation-delay: .75s
+}
+
+@keyframes btn-anim4 {
+  0% {
+    bottom: -100%;
+  }
+
+  50%,
+  100% {
+    bottom: 100%;
+  }
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  color: #64CCC5;
+  font-size: 16px;
+  text-transform: uppercase;
+  margin-top: 5px;
+  letter-spacing: 4px
+}
+
+.dropdown:hover {
+  background: #64CCC5;
+  color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #64CCC5,
+    0 0 25px #64CCC5,
+    0 0 50px #64CCC5,
+    0 0 100px #64CCC5;
+}
+
+.tab {
+  border: none;
+  border-bottom: 2px solid  #64CCC5 ;
+  border-radius: 0%;
+  color:  #64CCC5;
+  background-color: #DAFFFB;
+}
+ .tab:hover{
+  background: #64CCC5;
+  color: #fff;
+ }
+
+ .tab:focus{
+  border-bottom: 5px solid #64CCC5 ;
+ }
+ .profileBtnImg{
+  position: relative;
+ }
+.btnProfile{
+  width: 50px;
+  height: 50px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+.main-buttons{
+  padding: 25px ,30px;
+  background-color:  #DAFFFB;
+  color:  #001C30;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  letter-spacing: 4px;
+  overflow: hidden;
+  transition: 0.5s;
+  cursor: pointer;
+}
+
+.main-buttons:hover{
+    background: #001C30;
+    color:  #DAFFFB;
+    box-shadow: 0 0 5px #001C30,
+                0 0 25px #001C30,
+                0 0 50px #001C30,
+                0 0 200px #001C30;
+     -webkit-box-reflect:below 1px linear-gradient(transparent,#DAFFFB);
+}
