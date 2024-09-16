@@ -1,10 +1,18 @@
 package online.library.controllers;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import online.library.beans.BookBean;
+import online.library.beans.BookOutputBean;
+import online.library.helpers.BookHelper;
+import online.library.helpers.FileConverterHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +40,10 @@ import online.library.services.UserBookService;
 public class BookController {
 	@Autowired
 	private BookService bookService;
+
+	@Autowired
+	private BookHelper bookHelper;
+
 	@Autowired
 	private UserBookService userBookService;
 	
@@ -39,10 +51,28 @@ public class BookController {
 	private FileService fileService;
 	
 	@GetMapping("/{id}")
-	public Book getBook(@PathVariable(name = "id") String id) {
+	public BookOutputBean getBook(@PathVariable(name = "id") String id) throws MalformedURLException {
 		Book book = bookService.get(Long.parseLong(id));
-		return book;
+		Long readers = bookService.getReaders(Long.parseLong(id));
+		 BookOutputBean bean = bookHelper.convertToBookOutputBean(book);
+		 bean.setReaders(readers);
+		 return bean;
 	}
+
+	@GetMapping("/pdf/{id}")
+	public String getBookPdf(@PathVariable(name = "id") String id) throws IOException {
+		Book book = bookService.get(Long.parseLong(id));
+		String url = book.getBookPdf();
+		return FileConverterHelper.getPdf(url);
+	}
+
+//	@GetMapping("/pdf/{id}")
+//	public String getBookPdf(@PathVariable(name = "id") String id) throws MalformedURLException {
+//		Book book = bookService.get(Long.parseLong(id));
+//		return book.getBookPdf();
+//	}
+
+
 	
 //	@PostMapping("/save/{title}/{isbn}/{pages}/{description}/{genres}")
 //	public Book saveBook(@PathVariable(name = "title") String title,@PathVariable(name = "isbn") String isbn,
@@ -74,15 +104,15 @@ public class BookController {
 		return bookService.update(Long.parseLong(id), title, isbn, description, Integer.parseInt(pages), genre, authors,file);
 		
 	}
-	@GetMapping("/all")
-	public List<Book> getAllBooks(){
-		List<UserBook> usersBooks = userBookService.getByUserUsername();
+	@GetMapping("/all/{token}")
+	public ResponseEntity<List<BookBean>> getAllBooks(@PathVariable String token){
+		List<UserBook> usersBooks = userBookService.getByToken(token);
 		List<Book> books = bookService.getAllBooks();
 			for(UserBook ub: usersBooks) {
 				books.removeIf(book -> book.getId().equals(ub.getBook().getId()));
 			}
 		
-		return books;
+		return ResponseEntity.ok(bookHelper.convertToList(books));
 	}
 	
 	@DeleteMapping("/{id}")

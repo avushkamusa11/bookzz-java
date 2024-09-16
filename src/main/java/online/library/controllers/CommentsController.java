@@ -2,6 +2,8 @@ package online.library.controllers;
 
 import java.util.List;
 
+import online.library.beans.CommentBean;
+import online.library.helpers.CommentHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,14 +23,17 @@ public class CommentsController {
 	@Autowired
 	CommentsService commentsService;
 
+	@Autowired
+	CommentHelper commentHelper;
+
 	@GetMapping("/{id}")
-	public List<Comment> getCommentsByBookId(@PathVariable(name = "id") String bookId) {
+	public List<CommentBean> getCommentsByBookId(@PathVariable(name = "id") String bookId) {
 		List<Comment> comments = commentsService.findAllComentsByBookId(Long.parseLong(bookId));
-		return comments;
+		return commentHelper.convertToBeanList(comments);
 	}
 	
-	@PostMapping("/{id}")
-	public void addComment(@PathVariable(name = "id") String id ,@RequestBody String comment) {
-		commentsService.save(comment, Long.parseLong(id));
+	@PostMapping("/{id}/{token}")
+	public Comment addComment(@PathVariable(name = "id") String id , @PathVariable(name = "token") String token,@RequestBody String comment) {
+		return commentsService.save(comment,token, Long.parseLong(id));
 	}
 }

@@ -11,4 +11,6 @@ import online.library.entities.Quote;
 public interface QuoteRepository extends JpaRepository<Quote, Long>, JpaSpecificationExecutor<Quote> {
 	List<Quote> findByUserUsername(String username);
 	List<Quote> findByBookId(long bookId);
+
+    List<Quote> findByIsPrivateTrue();
 }

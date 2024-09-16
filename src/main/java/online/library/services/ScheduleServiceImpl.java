@@ -1,5 +1,6 @@
 package online.library.services;
 
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
@@ -23,7 +24,8 @@ import online.library.repositories.UserRepository;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
-
+	@Autowired
+	private UserService userService;
 	@Autowired
 	private ScheduleRepository scheduleRepository;
 	@Autowired 
@@ -75,22 +77,23 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return stringMonth;
 	}
 	@Override
-	public Schedule addSchedue() {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(username);
+	public Schedule addSchedue(String token) {
+
+		User user = userService.getUserByToken(token);
+
 		int month =  new Date().getMonth();
-		Schedule schedule = new Schedule();
-		schedule.setMonth(setMonth(month));
-		schedule.setUser(user);
-		scheduleRepository.save(schedule);
-		return null;
+		if(hasScheduleForMonth(user, month)){
+			return null;
+		}else{
+			Schedule schedule = new Schedule();
+			schedule.setMonth(setMonth(month));
+			schedule.setUser(user);
+			scheduleRepository.save(schedule);
+			return null;
+		}
 	}
 	@Override
-	public boolean hasScheduleForMonth() {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(username);
-		int month =  new Date().getMonth();
-		
+	public boolean hasScheduleForMonth(User user, int month) {
 		Schedule schedule =  scheduleRepository.getScheduleByMonthAndUser(setMonth(month),user);
 		if(schedule == null) {
 			return false;
@@ -98,29 +101,29 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return true;
 	}
 	@Override
-	public Plan savePlan(Date date, String startTime, String endTime, long bookId) {
-		String[] tempStartDate = startTime.split(" ");
-		String currentStartTime = tempStartDate[4];
-		String[] tempEndDate = endTime.split(" ");
-		String currentEndTime = tempEndDate[4];
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(username);
-		int month =  new Date().getMonth();
-		Book book = bookRepository.findById(bookId).get();
+	public Plan savePlan(Date date, String startTime, String title, String token) {
+		User user = userService.getUserByToken(token);
+		System.out.println("Default Charset=" + Charset.defaultCharset());
+ 		int month =  new Date().getMonth();
+		Book book = bookRepository.findByTitle(title);
 		Schedule schedule =  scheduleRepository.getScheduleByMonthAndUser(setMonth(month),user);
-		Plan plan = new Plan();
-		plan.setDate(date);
-		plan.setStatTime(currentStartTime);
-		plan.setEndTime(currentEndTime);
-		plan.setSchedule(schedule);
-		plan.setBook(book);
-		planRepository.save(plan);
-		return plan;
+		Plan plan = planRepository.findByScheduleAndDateAndStatTime(schedule,date,startTime);
+		if(plan != null){
+			Plan emptyPlan = new Plan();
+			emptyPlan.setId(-1l);
+			return  emptyPlan;
+		}
+		Plan newPlan = new Plan();
+		newPlan.setDate(date);
+		newPlan.setStatTime(startTime);
+		newPlan.setSchedule(schedule);
+		newPlan.setBook(book);
+		planRepository.save(newPlan);
+		return newPlan;
 	}
 	@Override
-	public List<Plan> getPlans() {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(username);
+	public List<Plan> getPlans(String token) {
+		User user = userService.getUserByToken(token);
 		int month =  new Date().getMonth();
 		
 		Schedule schedule =  scheduleRepository.getScheduleByMonthAndUser(setMonth(month),user);

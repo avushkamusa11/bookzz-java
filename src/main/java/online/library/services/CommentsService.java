@@ -7,6 +7,6 @@ import online.library.entities.Comment;
 public interface CommentsService {
 	List<Comment> findAllComentsByBookId(long id);
 	
-	void save(String comment, long id);
+	Comment save(String comment,String token, long id);
 
 }

@@ -1,5 +1,7 @@
 package online.library.controllers;
 
+import online.library.beans.YearGoalBean;
+import online.library.helpers.YearGoalHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,18 +21,26 @@ public class YearGoalController {
 	
 	@Autowired 
 	YearGoalService yearGoalService;
-	@PostMapping("/{countOfBooks}")
-	public YearGoal addGoal(@PathVariable(name = "countOfBooks") String countOfBooks) {
-		return yearGoalService.add(Integer.parseInt(countOfBooks));
+
+	@Autowired
+	YearGoalHelper yearGoalHelper;
+
+	@PostMapping("/{countOfBooks}/{token}")
+	public YearGoalBean addGoal(@PathVariable(name = "countOfBooks") String countOfBooks, @PathVariable String token) {
+		YearGoal goal = yearGoalService.add(Integer.parseInt(countOfBooks),token);
+	return  yearGoalHelper.convertToBean(goal);
 	}
-	@GetMapping("/myGoal")
-	public YearGoal getGoal() {
+	@GetMapping("/myGoal/{token}")
+	public YearGoal getGoal(@PathVariable String token) {
 		return yearGoalService.getByUserUsername();
 	}
 	
-	@GetMapping("/myGoal/{year}")
-	public YearGoal getGoalByYear(@PathVariable(name ="year") String year) {
-		YearGoal yearGoal = yearGoalService.getByUserUsernameAndYear(Integer.parseInt(year));
-		return yearGoal;
+	@GetMapping("/myGoal/{year}/{token}")
+	public YearGoalBean getGoalByYear(@PathVariable(name ="year") String year, @PathVariable String token) {
+		YearGoal yearGoal = yearGoalService.getByUserUsernameAndYear(Integer.parseInt(year), token);
+		if(yearGoal == null ){
+			return new YearGoalBean(-1l,-1,-1);
+		}
+		return yearGoalHelper.convertToBean(yearGoal);
 	}
 }

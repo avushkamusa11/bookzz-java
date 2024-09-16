@@ -7,8 +7,10 @@ import online.library.entities.Conversation;
 import online.library.entities.User;
 
 public interface ConversationService {
-	Conversation addConversation( long reciever, String message);
+	Conversation addConversation( long reciever, String message, String token);
 	List<Conversation> getConversation(long reciever);
 	List<Conversation> getConversationsBySender();
-	List<Conversation> getConversationByUsers(long reciever);
+	List<Conversation> getConversationByUsers(long reciever, String token);
+
+	List<Conversation> getAllLastConversations(String token);
 }

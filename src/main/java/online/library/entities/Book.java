@@ -21,8 +21,8 @@ public class Book {
 	private String isbn;
 	private int pages;
 	private String file;
-	@ManyToMany
-	private List<Genre> genres;
+	@ManyToOne
+	private Genre genre;
 	@ManyToMany
 	private List<Author> authors;
 	@OneToMany
@@ -57,11 +57,11 @@ public class Book {
 	public void setPages(int pages) {
 		this.pages = pages;
 	}
-	public List<Genre> getGenres() {
-		return genres;
+	public Genre getGenre() {
+		return genre;
 	}
-	public void setGenres(List<Genre> genres) {
-		this.genres = genres;
+	public void setGenre(Genre genre) {
+		this.genre = genre;
 	}
 	public List<Author> getAuthors() {
 		return authors;

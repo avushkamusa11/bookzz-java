@@ -10,6 +10,6 @@ import online.library.entities.Statistic;
 public interface StatisticService {
 	public Statistic getStatisticByUsername();
 	public Date getFirstDate();
-	public int getStatisticByUsernameAndDate(Date from, Date to);
+	public int getStatisticByUsernameAndDate(Date from, Date to, String token);
 
 }

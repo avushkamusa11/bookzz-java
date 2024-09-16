@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.security.auth.Subject;
 
+import online.library.entities.User;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ public class StatisticServiceImpl implements StatisticService {
 	private StatisticRepository statisticRepository;
 	@Autowired 
 	private StatisticDao statisticDao;
+	@Autowired
+	private UserService userService;
 	
 	@Override
 	public Statistic getStatisticByUsername() {
@@ -29,9 +32,11 @@ public class StatisticServiceImpl implements StatisticService {
 		return statistic;
 	}
 	@Override
-	public int getStatisticByUsernameAndDate(Date from, Date to) {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		return statisticDao.findStatisticByUserUsernameAndDate(username, from, to);
+	public int getStatisticByUsernameAndDate(Date from, Date to, String token) {
+		//String username = (String) SecurityUtils.getSubject().getPrincipal();
+		User user = userService.getUserByToken(token);
+
+		return statisticDao.findStatisticByUserUsernameAndDate(user.getUsername(), from, to);
 	}
 	@Override
 	public Date getFirstDate() {

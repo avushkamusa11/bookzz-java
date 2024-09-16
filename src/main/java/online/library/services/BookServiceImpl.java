@@ -4,16 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import online.library.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import online.library.entities.Author;
 import online.library.entities.Book;
 import online.library.entities.Genre;
-import online.library.repositories.AuthorRepository;
-import online.library.repositories.BookRepository;
-import online.library.repositories.GenreRepository;
-import online.library.repositories.UserRepository;
 
 @Service
 public class BookServiceImpl implements BookService{
@@ -23,6 +20,8 @@ public class BookServiceImpl implements BookService{
 	private AuthorRepository authorRepository;
 	@Autowired 
 	private GenreRepository genreeRepository;
+	@Autowired
+	private BookDao bookDao;
 	
 	private Book book;
 	
@@ -30,7 +29,6 @@ public class BookServiceImpl implements BookService{
 	public Book save(String title, String isbn, String description, int pages, String genreNames, List<Author> authorsNames, String file){
 		book = new Book();
 		List<Author> authors = new ArrayList<Author>();
-		List<Genre> genres = new ArrayList<Genre>();
 //		for(Object obj : authorsNames) {
 //			
 //			Author author = authorRepository.findByName((obj).toString());
@@ -39,15 +37,14 @@ public class BookServiceImpl implements BookService{
 //		for(Genre name : genreNames) {
 //			genres.add(name);
 //		}
-		
 		Genre genre = genreeRepository.findById(Long.parseLong(genreNames)).get();
-		genres.add(genre);
+
 		book.setTitle(title);
 		book.setIsbn(isbn);
 		book.setPages(pages);
 		book.setDescription(description);
 		book.setAuthors(authorsNames);
-		book.setGenres(genres);
+		book.setGenre(genre);
 		book.setFile(file);
 		bookRepository.save(book);
 		return book;
@@ -56,16 +53,15 @@ public class BookServiceImpl implements BookService{
 	@Override
 	public Book update(long id, String title, String isbn, String description, int pages, String genreNames, List<Author> authorsNames,String file) {
 		bookRepository.findById(id);
-		
-		List<Genre> genres = new ArrayList<Genre>();
+
 		Genre genre = genreeRepository.findById(Long.parseLong(genreNames)).get();
-		genres.add(genre);
+
 		book.setTitle(title);
 		book.setIsbn(isbn);
 		book.setPages(pages);
 		book.setDescription(description);
 		book.setAuthors(authorsNames);
-		book.setGenres(genres);
+		book.setGenre(genre);
 		book.setFile(file);
 		bookRepository.save(book);
 		return book;
@@ -130,8 +126,13 @@ public class BookServiceImpl implements BookService{
 	public List<Book> getBooksByGenre() {
 		Genre genre = genreeRepository.findByGenreName("Fantasy");
 		
-		List<Book> books = bookRepository.findBookByGenres(genre);
+		List<Book> books = bookRepository.findBookByGenre(genre);
 		return books;
+	}
+
+	@Override
+	public Long getReaders(long id) {
+		return bookDao.getCountOfReaders(id);
 	}
 
 }

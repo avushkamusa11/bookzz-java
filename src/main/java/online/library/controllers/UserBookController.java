@@ -1,7 +1,10 @@
 package online.library.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
+import online.library.beans.MyBookBean;
+import online.library.helpers.UserBookHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,24 +22,27 @@ import online.library.services.UserBookService;
 @RequestMapping("/myLibrary")
 public class UserBookController {
 	@Autowired
-	UserBookService userBookservice;
+	private UserBookService userBookservice;
+
+	@Autowired
+	private UserBookHelper helper;
 	
-	@PostMapping("/{bookId}/{status}")
-	public UserBook save(@PathVariable(name = "bookId") String bookId, @PathVariable(name = "status") String status) {
-		UserBook userBook = userBookservice.save(Long.parseLong(bookId), status);
-		return userBook;
+	@PostMapping("/{bookId}/{status}/{token}")
+	public Long save(@PathVariable(name = "bookId") String bookId, @PathVariable(name = "status") String status, @PathVariable String token) {
+		UserBook userBook = userBookservice.save(Long.parseLong(bookId), status,token);
+		return userBook.getId();
 	}
 	
-	@PutMapping("/{bookId}/{status}")
-	public UserBook update(@PathVariable(name = "bookId") String bookId, @PathVariable(name = "status") String status) {
-		UserBook userBook = userBookservice.update(Long.parseLong(bookId), status);
-		return userBook;
+	@PutMapping("/{bookId}/{status}/{token}")
+	public MyBookBean update(@PathVariable(name = "bookId") String bookId, @PathVariable(name = "status") String status, @PathVariable(name = "token") String token) throws IOException {
+		UserBook userBook = userBookservice.update(Long.parseLong(bookId), status,token);
+		return helper.convertToMyBookBean(userBook);
 	}
 	
-	@GetMapping("/myBooks")
-	public List<UserBook> getMyBooks(){
-		List<UserBook> usersBooks = userBookservice.getByUserUsername();
-		return usersBooks;
+	@GetMapping("/myBooks/{token}")
+	public List<MyBookBean> getMyBooks(@PathVariable String token) throws IOException {
+		List<UserBook> usersBooks = userBookservice.getByToken(token);
+		return helper.convertToMyBookList(usersBooks);
 	}
 	@GetMapping("/books/{userId}")
 	public List<UserBook> getBooksByUser(@PathVariable(name = "userId") String userId){
@@ -56,8 +62,9 @@ public class UserBookController {
 	public UserBook getByBookId(@PathVariable(name = "bookId") String bookId) {
 		return userBookservice.getByBookId(Long.parseLong(bookId));
 	}
-	@GetMapping("/readBooks/{year}")
-	public List<UserBook> getReadBooks(@PathVariable(name = "year") String year){
-		return userBookservice.findByUserAndStatus(Integer.parseInt(year));
+	@GetMapping("/readBooks/{year}/{token}")
+	public List<MyBookBean> getReadBooks(@PathVariable(name = "year") String year, @PathVariable String token) throws IOException {
+		List<UserBook> books =  userBookservice.findByUserAndStatus(Integer.parseInt(year), token);
+		return  helper.convertToMyBookList(books);
 	}
 }

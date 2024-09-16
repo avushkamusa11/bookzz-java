@@ -2,6 +2,7 @@ package online.library.services;
 
 import java.util.List;
 
+import online.library.beans.QuoteInputBean;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,30 +26,28 @@ public class QuoteServiceImpl implements QuoteService {
 	
 	@Autowired
 	BookRepository bookRepository;
+
+	@Autowired
+	UserService userService;
 	
 	@Override
-	public Quote save(String quote, long bookId) {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(username);
-		Book book = bookRepository.findById(bookId).get();
+	public Quote save(QuoteInputBean input, String token) {
+		User user = userService.getUserByToken(token);
+		Book book = bookRepository.findBookByTitle(input.getBookTitle());
 		Quote quoteObj = new Quote();
 		quoteObj.setBook(book);
-		quoteObj.setQuote(quote);
+		quoteObj.setQuote(input.getQuoteText());
 		quoteObj.setUser(user);
+		quoteObj.setPrivate(input.isPrivate());
 		quoteRepository.save(quoteObj);
 		return quoteObj;
 
 	}
 
 	@Override
-	public Quote update(long id, String quote, long bookId) {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(username);
-		Book book = bookRepository.findById(bookId).get();
+	public Quote update(long id, boolean isPrivate) {
 		Quote quoteObj = quoteRepository.findById(id).get();
-		quoteObj.setBook(book);
-		quoteObj.setQuote(quote);
-		quoteObj.setUser(user);
+		quoteObj.setPrivate(isPrivate);
 		quoteRepository.save(quoteObj);
 		return quoteObj;
 
@@ -61,7 +60,7 @@ public class QuoteServiceImpl implements QuoteService {
 
 	@Override
 	public List<Quote> getAll() {
-		return quoteRepository.findAll();
+		return quoteRepository.findByIsPrivateTrue();
 	}
 
 	@Override
@@ -69,9 +68,10 @@ public class QuoteServiceImpl implements QuoteService {
 		return quoteRepository.findByBookId(bookId);
 	}
 	@Override
-	public List<Quote> getByUsername() {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		return quoteRepository.findByUserUsername(username);
+	public List<Quote> getByUsername(String token) {
+		//String username = (String) SecurityUtils.getSubject().getPrincipal();
+		User user = userService.getUserByToken(token);
+		return quoteRepository.findByUserUsername(user.getUsername());
 	}
 
 }

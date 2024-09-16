@@ -1,6 +1,7 @@
 package online.library.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.security.auth.Subject;
@@ -20,12 +21,14 @@ public class ConversationServiceImpl implements ConversationService {
 	ConversationRepository conversationRepository;
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	UserService userService;
 	
 	@Override
-	public Conversation addConversation(long recieverId, String message) {
+	public Conversation addConversation(long recieverId, String message, String token) {
 		LocalDateTime time = LocalDateTime.now();
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User sender = userRepository.findUserByUsername(username);
+		//String username = (String) SecurityUtils.getSubject().getPrincipal();
+		User sender = userService.getUserByToken(token);
 		User reciever = userRepository.get(recieverId);
 		Conversation conversation = new Conversation();
 		conversation.setSender(sender);
@@ -54,11 +57,26 @@ public class ConversationServiceImpl implements ConversationService {
 	}
 
 	@Override
-	public List<Conversation> getConversationByUsers(long reciever) {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User sender = userRepository.findUserByUsername(username);
+	public List<Conversation> getConversationByUsers(long reciever, String token) {
+		//String username = (String) SecurityUtils.getSubject().getPrincipal();
+		User sender = userService.getUserByToken(token);
 		List<Conversation> conversation = conversationRepository.getConversationByUsers(sender.getId(), reciever);
 		return conversation;
+	}
+
+	@Override
+	public List<Conversation> getAllLastConversations(String token) {
+		User user = userService.getUserByToken(token);
+		List<Conversation> lastMessages = new ArrayList<>();
+		List<User> friends = userService.getFriends(token);
+		for (User u : friends) {
+			List<Conversation> c = conversationRepository.getConversationByUsersDesc(user.getId(), u.getId());
+			if(!c.isEmpty()){
+				lastMessages.add(c.get(0));
+			}
+
+		}
+		return lastMessages;
 	}
 
 }

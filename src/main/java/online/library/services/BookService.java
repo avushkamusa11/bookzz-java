@@ -17,7 +17,7 @@ public interface BookService {
 	 public void delete(long id);
 	 public Book rateBook(long id, int grade);
 	 public List<Book> getBooksByGenre();
-	 
-	 
 
+
+    Long getReaders(long parseLong);
 }

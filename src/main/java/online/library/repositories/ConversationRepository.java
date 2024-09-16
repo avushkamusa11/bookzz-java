@@ -17,5 +17,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
 	@Query("SELECT c FROM Conversation c where sender_id=:sender and reciever_id = :reciever or sender_id =:reciever and reciever_id =:sender order by send_time asc")
 	List<Conversation> getConversationByUsers(long sender, long reciever);
 	List<Conversation> getConversationBySender(User sender);
+	@Query("SELECT c FROM Conversation c where sender_id=:sender and reciever_id = :reciever or sender_id =:reciever and reciever_id =:sender order by send_time desc")
+	List<Conversation> getConversationByUsersDesc(long sender, long reciever);
 
 }

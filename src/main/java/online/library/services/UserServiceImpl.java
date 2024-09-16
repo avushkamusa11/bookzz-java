@@ -1,9 +1,7 @@
 package online.library.services;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.security.auth.Subject;
 
@@ -25,8 +23,12 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	RoleRepository roleRepository;
+
 	
 	User user;
+
+	private HashMap<String,User> tokens = new HashMap<>();
+
 	@Override
 	public User save(String fName, String lName, String username, String password) {
 		user = new User();
@@ -75,8 +77,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User addProfilePicture(long id, String image) {
-		user = userRepository.get(id);
+	public User addProfilePicture(String token, String image) {
+		user = getUserByToken(token);
 		user.setProfilePicture(image);
 		userRepository.update(user);
 		return user;
@@ -103,10 +105,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> getAllUsers() {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		user = userRepository.findUserByUsername(username);
-		List<User> users = userRepository.getAllUsers(username);
+	public List<User> getAllUsers(String token) {
+		user = getUserByToken(token);
+		List<User> users = userRepository.getAllUsers(user.getUsername());
 		List<User> friends = userRepository.getFriends(user.getId());
 
 		for(User u: friends) {
@@ -116,9 +117,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> addFriend( long friendId) {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(username);
+	public List<User> addFriend( long friendId, String token) {
+		//String username = (String) SecurityUtils.getSubject().getPrincipal();
+		User user = getUserByToken(token);
 		List<User> friends = userRepository.getFriends(user.getId());
 		User friend = userRepository.get(friendId);
 		friends.add(friend);
@@ -129,10 +130,44 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> getFriends(long id) {
-		
-		List<User> friends = userRepository.getFriends(id);
+	public List<User> getFriends(String token) {
+		User user = getUserByToken(token);
+		List<User> friends = userRepository.getFriends(user.getId());
 		return friends;
+	}
+
+	@Override
+	public String addToken(String username, String password) {
+		user = userRepository.findUserByUsernameAndPassword(username,password);
+		if(user != null){
+			return addToken(user);
+		}
+		return null;
+	}
+
+	@Override
+	public String addToken(User user) {
+		if(tokens.containsValue(user)){
+			tokens.remove(user);
+		}
+		String token = UUID.randomUUID().toString();
+		tokens.put(token, user);
+		return token;
+	}
+
+	@Override
+	public User getUserByToken(String token) {
+		if(tokens.containsKey(token)){
+			return tokens.get(token);
+		}
+		return null;
+	}
+
+	@Override
+	public void logout(String token) {
+		if(tokens.containsKey(token)){
+			tokens.remove(token);
+		}
 	}
 
 }

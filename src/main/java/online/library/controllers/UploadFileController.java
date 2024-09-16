@@ -72,21 +72,21 @@ public class UploadFileController {
 		return "Error uploading image";
 	}
 
-	@PostMapping("/uploadProfile/{userId}")
-	public User uploadProfileImage(@RequestParam("image") MultipartFile imageFile,
-			@PathVariable(name = "userId") String userId) {
+	@PostMapping("/uploadProfileImage/{token}")
+	public ResponseEntity<User> uploadProfileImage(@RequestParam("image") MultipartFile image,
+												   @PathVariable(name = "token") String token) {
 		try {
-			String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-			String uploadPath = "C:\\Users\\a.musa\\Documents\\react\\library\\library\\public\\images";
+			String uniqueFileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+			String uploadPath = "D:\\bookzz_images";
 			File file = new File(uploadPath, uniqueFileName);
-			imageFile.transferTo(file);
+			image.transferTo(file);
 
-			String fullFile = uniqueFileName;
+			String fullFile = uploadPath + "\\" + uniqueFileName;
 
-			return userService.addProfilePicture(Long.parseLong(userId), fullFile);
+			User updatedUser = userService.addProfilePicture(token, fullFile);
+			return new ResponseEntity<>(updatedUser, HttpStatus.OK);
 		} catch (IOException e) {
-			// Handle the case when there is an error saving the file
-			return null;
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

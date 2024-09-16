@@ -1,5 +1,6 @@
 package online.library.services;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -22,7 +23,7 @@ public class CommentsServiceImpl implements CommentsService {
 	CommentRepository commentRepository;
 	
 	@Autowired
-	UserRepository userRepository;
+	UserService userService;
 	
 	@Autowired
 	BookRepository bookRepository;
@@ -34,16 +35,16 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	@Override
-	public void save(String commentText, long id) {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(username);
+	public Comment save(String commentText,String token, long id) {
+		User user = userService.getUserByToken(token);
 		Book book = bookRepository.findById(id).get();
 		Comment comment = new Comment();
 		comment.setBook(book);
 		comment.setComment(commentText);
 		comment.setUser(user);
-		commentRepository.save(comment);
-		
+		comment.setPusblishDate(new Date());
+		Comment c = commentRepository.save(comment);
+		return  c;
 	}
 
 }

@@ -27,6 +27,8 @@ import online.library.repositories.UserRepository;
 public class UserBookServiceImpl implements UserBookService {
 	@Autowired
 	UserRepository userRepository;
+	@Autowired
+	UserService userService;
 	
 	@Autowired
 	UserBookRepository userBookRepository;
@@ -38,9 +40,8 @@ public class UserBookServiceImpl implements UserBookService {
 	StatisticRepository statisticRepository;
 	
 	@Override
-	public UserBook save(long bookId, String status) {
-		String loggedUsersUsername = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(loggedUsersUsername);
+	public UserBook save(long bookId, String status, String token) {
+		User user = userService.getUserByToken(token);
 		Book book = bookRepository.findById(bookId).get();
 		
 		UserBook userBook = new UserBook();
@@ -50,7 +51,7 @@ public class UserBookServiceImpl implements UserBookService {
 		
 		if(status.equals("Read")){
 			userBook.setDateOfRead(LocalDate.now());
-			Statistic checkStatistic = statisticRepository.findByUserUsername(loggedUsersUsername);
+			Statistic checkStatistic = statisticRepository.findByUserUsername(user.getUsername());
 			Statistic statistic;
 			if(checkStatistic.equals(null)) {
 				statistic = new Statistic();
@@ -79,19 +80,18 @@ public class UserBookServiceImpl implements UserBookService {
 
 
 	@Override
-	public UserBook update(long bookId, String status) {
-		String loggedUsersUsername = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(loggedUsersUsername);
+	public UserBook update(long bookId, String status, String token) {
+		User user = userService.getUserByToken(token);
 		Book book = bookRepository.findById(bookId).get();
 		
-		UserBook userBook = userBookRepository.findByUserUsernameAndBookId(loggedUsersUsername,bookId);
+		UserBook userBook = userBookRepository.findByUserUsernameAndBookId(user.getUsername(),bookId);
 		userBook.setBook(book);
 		userBook.setStatus(status);
 		userBook.setUser(user);
 		userBookRepository.save(userBook);
 		if(status.equals("Read")){
 			userBook.setDateOfRead(LocalDate.now());
-			Statistic checkStatistic = statisticRepository.findByUserUsername(loggedUsersUsername);
+			Statistic checkStatistic = statisticRepository.findByUserUsername(user.getUsername());
 			Statistic statistic;
 			if(checkStatistic == null) {
 				statistic = new Statistic();
@@ -150,9 +150,8 @@ public class UserBookServiceImpl implements UserBookService {
 
 
 	@Override
-	public List<UserBook> findByUserAndStatus(int year) {
-		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		User user = userRepository.findUserByUsername(username);
+	public List<UserBook> findByUserAndStatus(int year, String token) {
+		User user = userService.getUserByToken(token);
 		String status = "Read";
 		
 		List<UserBook> fromBase =  userBookRepository.findByUserAndStatus(user, status);
@@ -165,10 +164,17 @@ public class UserBookServiceImpl implements UserBookService {
 		return books;
 	}
 
+	@Override
+	public List<UserBook> getByToken(String token) {
+		User user = userService.getUserByToken(token);{
+			if(user != null) {
+				List<UserBook> usersBooks = userBookRepository.findUserBookByUserUsername(user.getUsername());
+				return usersBooks;
+			}
+		}
+		return null;
+	}
 
 
-	
-	
-	
 
 }

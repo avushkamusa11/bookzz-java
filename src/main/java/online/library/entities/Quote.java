@@ -16,6 +16,8 @@ public class Quote {
 	private User user;
 	@ManyToOne
 	private Book book;
+
+	private boolean isPrivate;
 	public long getId() {
 		return id;
 	}
@@ -40,7 +42,12 @@ public class Quote {
 	public void setBook(Book book) {
 		this.book = book;
 	}
-	
-	
-	
+
+	public boolean isPrivate() {
+		return isPrivate;
+	}
+
+	public void setPrivate(boolean aPrivate) {
+		isPrivate = aPrivate;
+	}
 }

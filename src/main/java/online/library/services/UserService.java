@@ -13,9 +13,14 @@ public interface UserService {
 	public User get(long id);
 	public User findUserByUsername(String username);
 	public User findUserByUsernameAndPassword(String username, String password);
-	public User addProfilePicture(long id , String image);
-	public List<User> getAllUsers();
+	public User addProfilePicture(String token , String image);
+	public List<User> getAllUsers(String token);
 
-	List<User> addFriend(long friendId);
-	List<User> getFriends(long id);
+	List<User> addFriend(long friendId, String token);
+	List<User> getFriends(String token);
+	String addToken(String username, String password);
+	String addToken(User user);
+	User getUserByToken(String token);
+
+	void logout(String token);
 }
